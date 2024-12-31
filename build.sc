@@ -1,27 +1,28 @@
 import mill._, mill.scalalib._, mill.scalajslib._
 
-// import $ivy.`com.github.lolgab::mill-scalablytyped::0.1.12`
-// import com.github.lolgab.mill.scalablytyped._
-
-// object `scalablytyped-module` extends ScalaJSModule with ScalablyTyped {
-//   def scalaVersion = "3.6.2"
-//   def scalaJSVersion = "1.17.0"
-// }
-
 def resources = T.source(millSourcePath / "resources")
 
-trait TimeyModule extends ScalaJSModule {
+trait TimeyJsModule extends ScalaJSModule {
   def scalaVersion = "3.6.2"
   def scalaJSVersion = "1.17.0"
 
   def ivyDeps = Agg(
-    ivy"org.scala-js::scalajs-dom::2.8.0"
+    ivy"org.scala-js::scalajs-dom::2.8.0",
+    ivy"com.lihaoyi::castor:0.3.0",
+    ivy"com.lihaoyi::upickle:4.0.2",
+    ivy"com.lihaoyi::requests:0.9.0"
   )
 }
 
-object background extends TimeyModule
-object content extends TimeyModule
-object popup extends TimeyModule
+object shared extends TimeyJsModule
+
+trait TimeyScriptModule extends TimeyJsModule {
+  override def moduleDeps = Seq(shared)
+}
+
+object background extends TimeyScriptModule
+object content extends TimeyScriptModule
+object popup extends TimeyScriptModule
 
 def bundleExtension = T {
   val extensionDir = resources().path
@@ -34,9 +35,7 @@ def bundleExtension = T {
       .foreach(file => os.copy.over(file, T.dest / name, createFolders = true))
     files
       .find(_.ext == "map")
-      .foreach(file =>
-        os.copy.over(file, T.dest / s"$name.map", createFolders = true)
-      )
+      .foreach(file => os.copy.over(file, T.dest / s"$name.map", createFolders = true))
   }
 
   copyJsFiles(background.fastLinkJS().dest, "background.js")
