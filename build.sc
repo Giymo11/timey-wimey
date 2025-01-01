@@ -1,16 +1,19 @@
 import mill._, mill.scalalib._, mill.scalajslib._
 
+import $ivy.`com.github.lolgab::mill-scalablytyped::0.1.12`
+import com.github.lolgab.mill.scalablytyped._
+
 def resources = T.source(millSourcePath / "resources")
 
-trait TimeyJsModule extends ScalaJSModule {
+trait TimeyJsModule extends ScalaJSModule with ScalablyTyped {
   def scalaVersion = "3.6.2"
   def scalaJSVersion = "1.17.0"
 
   def ivyDeps = Agg(
     ivy"org.scala-js::scalajs-dom::2.8.0",
-    ivy"com.lihaoyi::castor:0.3.0",
-    ivy"com.lihaoyi::upickle:4.0.2",
-    ivy"com.lihaoyi::requests:0.9.0"
+    ivy"com.lihaoyi::castor::0.3.0",
+    ivy"com.lihaoyi::upickle::4.0.2",
+    ivy"com.alexitc::scala-js-chrome::0.9.0"
   )
 }
 

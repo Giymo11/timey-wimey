@@ -3,3 +3,5 @@
 .vscode
 out
 mill*
+package-lock.json
+node_modules
